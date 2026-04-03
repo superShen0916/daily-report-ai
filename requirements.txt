@@ -1,5 +1,6 @@
-# 使用 Claude（二选一）
-anthropic>=0.40.0
+# 必装（国内大多数厂商都用 OpenAI 兼容接口）
+openai>=1.0.0
 
-# 使用 Gemini（二选一）
-google-generativeai>=0.8.0
+# 按需安装（用哪个装哪个）
+# anthropic>=0.40.0          # Claude (Anthropic)
+# google-generativeai>=0.8.0 # Gemini (Google)
