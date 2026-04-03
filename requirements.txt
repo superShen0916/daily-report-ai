@@ -1,1 +1,5 @@
+# 使用 Claude（二选一）
 anthropic>=0.40.0
+
+# 使用 Gemini（二选一）
+google-generativeai>=0.8.0

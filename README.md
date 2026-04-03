@@ -21,13 +21,15 @@ cd daily-report-ai
 pip install -r requirements.txt
 ```
 
-配置 API Key：
+配置 API Key（二选一，优先使用 Anthropic）：
 
 ```bash
+# 使用 Claude（Anthropic）
 export ANTHROPIC_API_KEY=your_api_key_here
-```
 
-> 在 [Anthropic Console](https://console.anthropic.com/) 申请 API Key
+# 或使用 Gemini（Google）
+export GEMINI_API_KEY=your_api_key_here
+```
 
 ## 使用
 

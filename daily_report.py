@@ -2,6 +2,10 @@
 """
 打工人日报生成器 - 自动从 git commits 生成日报
 用法: python daily_report.py [--style formal|moyu|juanwang|tangping] [--days 1] [--repo /path]
+
+支持的 AI 提供商（按优先级自动检测）：
+  - Anthropic Claude: 设置 ANTHROPIC_API_KEY
+  - Google Gemini:    设置 GEMINI_API_KEY
 """
 
 import subprocess
@@ -9,12 +13,6 @@ import argparse
 import sys
 import os
 from datetime import datetime, timedelta
-
-try:
-    import anthropic
-except ImportError:
-    print("请先安装依赖: pip install anthropic")
-    sys.exit(1)
 
 
 STYLES = {
@@ -53,8 +51,6 @@ def get_git_commits(repo_path: str, days: int) -> str:
             check=True
         )
         commits = result.stdout.strip()
-        if not commits:
-            return ""
         return commits
     except subprocess.CalledProcessError as e:
         print(f"错误：无法读取 git 历史，请确认路径是 git 仓库：{repo_path}")
@@ -82,18 +78,11 @@ def get_repo_name(repo_path: str) -> str:
     return os.path.basename(os.path.abspath(repo_path))
 
 
-def generate_report(commits: str, style: str, repo_name: str, days: int) -> str:
-    """调用 Claude API 生成日报"""
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        print("错误：请设置环境变量 ANTHROPIC_API_KEY")
-        print("  export ANTHROPIC_API_KEY=your_api_key")
-        sys.exit(1)
-
-    client = anthropic.Anthropic(api_key=api_key)
+def build_prompt(commits: str, style: str, repo_name: str, days: int) -> tuple[str, str]:
+    """构建 system prompt 和 user message"""
     style_config = STYLES[style]
-
     period = "今日" if days == 1 else f"近 {days} 天"
+
     system_prompt = f"""你是一个帮程序员写工作日报的助手。
 根据提供的 git commit 记录，生成一份工作日报。
 {style_config['prompt']}
@@ -112,6 +101,18 @@ git commit 记录：
 
 请生成日报："""
 
+    return system_prompt, user_message
+
+
+def generate_with_anthropic(system_prompt: str, user_message: str, api_key: str) -> str:
+    """使用 Claude API 生成日报"""
+    try:
+        import anthropic
+    except ImportError:
+        print("错误：请安装 anthropic 库: pip install anthropic")
+        sys.exit(1)
+
+    client = anthropic.Anthropic(api_key=api_key)
     message = client.messages.create(
         model="claude-opus-4-6",
         max_tokens=1024,
@@ -119,6 +120,43 @@ git commit 记录：
         messages=[{"role": "user", "content": user_message}]
     )
     return message.content[0].text
+
+
+def generate_with_gemini(system_prompt: str, user_message: str, api_key: str) -> str:
+    """使用 Gemini API 生成日报"""
+    try:
+        import google.generativeai as genai
+    except ImportError:
+        print("错误：请安装 google-generativeai 库: pip install google-generativeai")
+        sys.exit(1)
+
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel(
+        model_name="gemini-2.0-flash",
+        system_instruction=system_prompt
+    )
+    response = model.generate_content(user_message)
+    return response.text
+
+
+def generate_report(commits: str, style: str, repo_name: str, days: int) -> str:
+    """自动检测可用 API，生成日报"""
+    system_prompt, user_message = build_prompt(commits, style, repo_name, days)
+
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+
+    if anthropic_key:
+        print("🤖 使用 Claude (Anthropic) 生成...\n")
+        return generate_with_anthropic(system_prompt, user_message, anthropic_key)
+    elif gemini_key:
+        print("🤖 使用 Gemini (Google) 生成...\n")
+        return generate_with_gemini(system_prompt, user_message, gemini_key)
+    else:
+        print("错误：未找到任何 API Key，请设置以下任意一个环境变量：")
+        print("  export ANTHROPIC_API_KEY=your_key   # 使用 Claude")
+        print("  export GEMINI_API_KEY=your_key       # 使用 Gemini")
+        sys.exit(1)
 
 
 def main():
@@ -131,6 +169,10 @@ def main():
   moyu      摸鱼版 - 字数多但信息量少，能水就水
   juanwang  卷王版 - 加班拼搏，彰显你的努力
   tangping  躺平版 - 极简主义，能少说就少说
+
+AI 提供商（自动检测，优先使用 Anthropic）:
+  export ANTHROPIC_API_KEY=your_key   # Claude
+  export GEMINI_API_KEY=your_key      # Gemini
 
 示例:
   python daily_report.py
