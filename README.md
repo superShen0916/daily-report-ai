@@ -1,33 +1,35 @@
 # 打工人日报生成器 🤖
 
-> 摸鱼救星！自动读取 git commits，一键生成四种风格日报。
+> 摸鱼救星！自动读取 git commits，一键生成四种风格日报。LLM-powered CLI tool for auto-generating your daily work report.
+
+> Agentic development assisted by Claude Code.
 
 ## 功能
 
-根据你的 git commit 记录，用 AI 自动生成工作日报，支持四种风格：
+根据你的 git commit 记录，用 LLM 自动生成工作日报，支持四种风格：
 
-| 风格 | 说明 |
-|------|------|
-| `formal` 正式版 | 专业简洁，适合汇报给领导 |
-| `moyu` 摸鱼版 | 字数多但信息量少，能水就水 |
-| `juanwang` 卷王版 | 加班拼搏，彰显你的努力 |
-| `tangping` 躺平版 | 极简主义，能少说就少说 |
+| 风格              | 说明                       |
+| ----------------- | -------------------------- |
+| `formal` 正式版   | 专业简洁，适合汇报给领导   |
+| `moyu` 摸鱼版     | 字数多但信息量少，能水就水 |
+| `juanwang` 卷王版 | 加班拼搏，彰显你的努力     |
+| `tangping` 躺平版 | 极简主义，能少说就少说     |
 
 ## 支持的 AI 提供商
 
-| 提供商 | 参数 | 环境变量 |
-|--------|------|----------|
+| 提供商             | 参数                   | 环境变量            |
+| ------------------ | ---------------------- | ------------------- |
 | Claude (Anthropic) | `--provider anthropic` | `ANTHROPIC_API_KEY` |
-| Gemini (Google) | `--provider gemini` | `GEMINI_API_KEY` |
-| DeepSeek | `--provider deepseek` | `DEEPSEEK_API_KEY` |
-| Kimi (Moonshot) | `--provider moonshot` | `MOONSHOT_API_KEY` |
-| 通义千问 (阿里) | `--provider qwen` | `DASHSCOPE_API_KEY` |
-| 豆包 (字节) | `--provider doubao` | `DOUBAO_API_KEY` |
-| 智谱 GLM | `--provider zhipu` | `ZHIPU_API_KEY` |
-| MiniMax | `--provider minimax` | `MINIMAX_API_KEY` |
-| 百川 | `--provider baichuan` | `BAICHUAN_API_KEY` |
-| 混元 (腾讯) | `--provider hunyuan` | `HUNYUAN_API_KEY` |
-| 星火 (讯飞) | `--provider spark` | `SPARK_API_KEY` |
+| Gemini (Google)    | `--provider gemini`    | `GEMINI_API_KEY`    |
+| DeepSeek           | `--provider deepseek`  | `DEEPSEEK_API_KEY`  |
+| Kimi (Moonshot)    | `--provider moonshot`  | `MOONSHOT_API_KEY`  |
+| 通义千问 (阿里)    | `--provider qwen`      | `DASHSCOPE_API_KEY` |
+| 豆包 (字节)        | `--provider doubao`    | `DOUBAO_API_KEY`    |
+| 智谱 GLM           | `--provider zhipu`     | `ZHIPU_API_KEY`     |
+| MiniMax            | `--provider minimax`   | `MINIMAX_API_KEY`   |
+| 百川               | `--provider baichuan`  | `BAICHUAN_API_KEY`  |
+| 混元 (腾讯)        | `--provider hunyuan`   | `HUNYUAN_API_KEY`   |
+| 星火 (讯飞)        | `--provider spark`     | `SPARK_API_KEY`     |
 
 设置对应环境变量后**自动检测**，无需手动指定；也可用 `--provider` 强制指定。
 
@@ -83,6 +85,16 @@ python daily_report.py --list-providers
 --provider, -p   指定 AI 提供商（默认自动检测）
 --list-providers 列出所有支持的提供商及配置状态
 ```
+
+## Features
+
+- ✅ Supports **10+ LLM providers** - Claude 3/Anthropic, Google Gemini, DeepSeek, Moonshot Kimi, Qwen, Doubao, GLM, MiniMax, Baichuan, Hunyuan, Spark
+- ✅ Four different report styles - formal, moyu (hide real work), juanwang (work overtime king), tangping (minimalist)
+- ✅ Auto-detect configured API keys, no need to manually specify
+- ✅ Count commits from N days, support custom repo path
+- ✅ Pure Python CLI, zero dependencies beyond openai-compatible SDKs
+
+Built with 🤖 LLM automation, agentic development by Claude Code.
 
 ## License
 
